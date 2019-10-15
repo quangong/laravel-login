@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\User;
 use Hash;
+use Validator;
 
 class AuthController extends Controller
 {
@@ -45,6 +46,14 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
+        $validatedData = Validator::make($request->all(), [
+            'email' => 'required',
+            'password' => 'required',
+        ]);
+
+        if ($validatedData->fails()){
+            return response()->json(["errors" => $validatedData->errors(), "data" => null], 400);
+        }
 
         if ($token = $this->guard()->attempt($credentials)) {
             return $this->respondWithToken($token);
@@ -95,9 +104,12 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => $this->guard()->factory()->getTTL() * 60
+            "errors" => null,
+            "data" => [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => $this->guard()->factory()->getTTL() * 60
+            ]
         ]);
     }
 
