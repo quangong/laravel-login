@@ -52,14 +52,14 @@ class AuthController extends Controller
         ]);
 
         if ($validatedData->fails()){
-            return response()->json(["errors" => $validatedData->errors(), "data" => null], 400);
+            return response()->json(["errors" => 'messages.Data invalid', "data" => null], 400);
         }
 
         if ($token = $this->guard()->attempt($credentials)) {
             return $this->respondWithToken($token);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        return response()->json(['error' => 'messages.Wrong email or password', 'data' => null], 401);
     }
 
     /**
@@ -104,7 +104,7 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            "errors" => null,
+            "errors" => "",
             "data" => [
                 'access_token' => $token,
                 'token_type' => 'bearer',
