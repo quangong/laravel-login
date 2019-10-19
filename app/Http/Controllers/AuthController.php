@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterUser;
 use App\User;
 use Hash;
 use Validator;
@@ -22,7 +23,12 @@ class AuthController extends Controller
         $this->user = new User();
     }
 
-    public function register(Request $request){
+    public function register(Request     $request){
+        if(User::where('email',$request->input('email')) -> first()){
+            return response()->json([
+                'message'=> 'Email registered, please enter other email',
+            ]);
+        }
         $user = User::create([
           'name' => $request->input('name'),
           'email' => $request->input('email'),
