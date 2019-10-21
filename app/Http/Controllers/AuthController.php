@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterUser;
+use App\Http\Requests\LoginRequest;
 use App\User;
 use Hash;
 use Validator;
@@ -23,7 +24,7 @@ class AuthController extends Controller
         $this->user = new User();
     }
 
-    public function register(Request     $request){
+    public function register(RegisterUser $request){
         if(User::where('email',$request->input('email')) -> first()){
             return response()->json([
                 'message'=> 'Email registered, please enter other email',
@@ -49,23 +50,15 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
-        $validatedData = Validator::make($request->all(), [
-            'email' => 'required',
-            'password' => 'required',
-        ]);
-
-        if ($validatedData->fails()){
-            return response()->json(["errors" => $validatedData->errors(), "data" => null], 400);
-        }
 
         if ($token = $this->guard()->attempt($credentials)) {
             return $this->respondWithToken($token);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        return response()->json(['error' => 'Unauthorized']);
     }
 
     /**
@@ -110,7 +103,6 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            "errors" => null,
             "data" => [
                 'access_token' => $token,
                 'token_type' => 'bearer',
