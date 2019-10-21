@@ -1,10 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: QuangOng
- * Date: 2019-10-16
- * Time: 08:19
- */
-return [
 
+return [
+    'errors' => [
+        'validation_error' => 'Validation error',
+        "route_not_found" => 'Route not found',
+        'session_not_found' => 'Session not found',
+        'record_not_found' => 'Record not found',
+        'unhandled_exception' => 'Unhandled exception'
+    ],
+    'login' => [
+        'invalid_credentials' => 'Invalid credentials',
+    ]
 ];
